@@ -52,8 +52,8 @@ public class SecurityConfig {
                 // 3. Reglas de autorización de las URLs de Petsplace
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/login").permitAll() // Solo el Login es 100% libre
+                        .requestMatchers("/api/v1/auth/register").permitAll() // Permitir el registro público de nuevos usuarios
                         .requestMatchers("/error").permitAll() // Permitir la ruta de error del contenedor
-                        .requestMatchers("/api/v1/auth/register").hasRole("Administrador") // Solo el Administrador puede registrar usuarios
                         .anyRequest().authenticated() // Citas, Historial, Medicamentos, etc. ¡Exigen token!
                 )
                 // 4. Política de sesión SIN ESTADO (Stateless)
