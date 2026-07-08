@@ -17,7 +17,7 @@ public class Consulta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mascota_id", nullable = false, foreignKey = @ForeignKey(name = "fk_consulta_mascota"))
     private Mascota mascota;
 

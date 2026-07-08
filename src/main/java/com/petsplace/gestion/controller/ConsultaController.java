@@ -17,7 +17,7 @@ public class ConsultaController {
 
     @GetMapping
     public List<Consulta> listarTodas() {
-        return consultaRepository.findAll();
+        return consultaRepository.findAllWithMascota();
     }
 
     @GetMapping("/{id}")

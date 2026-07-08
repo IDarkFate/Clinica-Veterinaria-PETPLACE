@@ -9,6 +9,7 @@ export default function Mascotas() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [mascotas, setMascotas] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
   
   const getRoleCode = () => {
     if (!user || !user.rol) return 'RECEPCION';
@@ -23,6 +24,10 @@ export default function Mascotas() {
   // Filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [specieFilter, setSpecieFilter] = useState('Todas las especies');
+
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
 
   // Modal
   const [showModal, setShowModal] = useState(false);
@@ -51,18 +56,34 @@ export default function Mascotas() {
   const [newOwnerDireccion, setNewOwnerDireccion] = useState('');
 
   const loadData = async () => {
-    const pets = await petService.getAll();
-    setMascotas(pets);
-    const clients = await clientService.getAll();
-    setClientes(clients);
-    if (clients.length > 0) {
-      setClienteId(clients[0].id.toString());
+    setLoadingData(true);
+    try {
+      // Se cargan en paralelo para evitar que un retraso en una petición bloquee a la otra
+      const [pets, clients] = await Promise.all([
+        petService.getAll(),
+        clientService.getAll()
+      ]);
+      setMascotas(pets || []);
+      setClientes(clients || []);
+      if (clients && clients.length > 0) {
+        setClienteId(clients[0].id.toString());
+      }
+    } catch (error) {
+      console.error('Error al cargar mascotas/clientes:', error);
+      alert('No se pudieron cargar los datos de mascotas. Verifica tu conexión e intenta de nuevo.');
+    } finally {
+      setLoadingData(false);
     }
   };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  // Volver a la página 1 cada vez que cambian los filtros
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, specieFilter]);
 
   // Cambiar emoji automáticamente según especie
   useEffect(() => {
@@ -195,6 +216,14 @@ export default function Mascotas() {
     return matchesSearch && matchesSpecie;
   });
 
+  // Paginación: 10 mascotas por página
+  const totalPages = Math.max(1, Math.ceil(filteredMascotas.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedMascotas = filteredMascotas.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
+
   return (
     <div className="space-y-6 select-none">
       
@@ -268,7 +297,19 @@ export default function Mascotas() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs">
-              {filteredMascotas.map((pet) => (
+              {loadingData ? (
+                <tr>
+                  <td colSpan="7" className="py-10 text-center text-slate-400 font-bold text-xs">
+                    Cargando mascotas...
+                  </td>
+                </tr>
+              ) : paginatedMascotas.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="py-10 text-center text-slate-400 font-bold text-xs">
+                    No se encontraron mascotas registradas.
+                  </td>
+                </tr>
+              ) : paginatedMascotas.map((pet) => (
                 <tr key={pet.id} className="hover:bg-slate-50/30">
                   
                   {/* Foto/Emoji */}
@@ -349,6 +390,36 @@ export default function Mascotas() {
             </tbody>
           </table>
         </div>
+
+        {/* Controles de paginación */}
+        {!loadingData && filteredMascotas.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-slate-100 bg-slate-50/50">
+            <p className="text-[11px] text-slate-400 font-semibold">
+              Mostrando {(safePage - 1) * PAGE_SIZE + 1}-{Math.min(safePage * PAGE_SIZE, filteredMascotas.length)} de {filteredMascotas.length} mascotas
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={safePage <= 1}
+                className="h-8 px-3 rounded-lg border border-slate-200 bg-white text-[11px] font-extrabold text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition-all cursor-pointer"
+              >
+                ‹ Anterior
+              </button>
+              <span className="text-[11px] font-extrabold text-slate-500 px-2">
+                Página {safePage} de {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={safePage >= totalPages}
+                className="h-8 px-3 rounded-lg border border-slate-200 bg-white text-[11px] font-extrabold text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition-all cursor-pointer"
+              >
+                Siguiente ›
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* MODAL: CREAR / EDITAR PACIENTE */}

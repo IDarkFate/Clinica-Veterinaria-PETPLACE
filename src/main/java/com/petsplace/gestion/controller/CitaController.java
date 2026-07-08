@@ -21,12 +21,12 @@ public class CitaController {
         if (fecha != null && !fecha.isEmpty()) {
             try {
                 LocalDate date = LocalDate.parse(fecha);
-                return citaRepository.findByFecha(date);
+                return citaRepository.findByFechaWithMascota(date);
             } catch (Exception e) {
                 // Si la fecha tiene formato inválido, ignoramos el filtro
             }
         }
-        return citaRepository.findAll();
+        return citaRepository.findAllWithMascota();
     }
 
     @GetMapping("/{id}")

@@ -17,7 +17,7 @@ public class Evolucion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mascota_id", nullable = false, foreignKey = @ForeignKey(name = "fk_evolucion_mascota"))
     private Mascota mascota;
 

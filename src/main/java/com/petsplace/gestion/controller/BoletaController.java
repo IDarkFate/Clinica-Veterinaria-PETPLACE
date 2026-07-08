@@ -24,7 +24,7 @@ public class BoletaController {
 
     @GetMapping
     public List<Boleta> listarTodas() {
-        return boletaRepository.findAllByOrderByFechaDesc();
+        return boletaRepository.findAllWithDetallesOrderByFechaDesc();
     }
 
     @GetMapping("/{id}")

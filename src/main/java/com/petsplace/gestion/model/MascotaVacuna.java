@@ -17,11 +17,11 @@ public class MascotaVacuna {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mascota_id", nullable = false, foreignKey = @ForeignKey(name = "fk_vacuna_mascota"))
     private Mascota mascota;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vacuna_id", nullable = false, foreignKey = @ForeignKey(name = "fk_vacuna_catalogo"))
     private Vacuna vacuna;
 

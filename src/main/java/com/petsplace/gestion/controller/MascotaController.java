@@ -37,7 +37,7 @@ public class MascotaController {
 
     @GetMapping
     public List<Mascota> listarTodas() {
-        return mascotaRepository.findAll();
+        return mascotaRepository.findAllWithCliente();
     }
 
     @GetMapping("/{id}")
