@@ -42,7 +42,7 @@ public class Mascota {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cliente_id", foreignKey = @ForeignKey(name = "fk_mascota_cliente"))
     private Cliente cliente;
 

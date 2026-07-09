@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { petService, consultationService, addPendingCharge, userService, vaccineService } from '../../services/api';
+import { petService, consultationService, addPendingCharge, userService, vaccineService, billingService } from '../../services/api';
 import { 
   FiArrowLeft, FiPlus, FiPhone, FiDollarSign, 
   FiShield, FiFileText, FiMapPin, FiMail,
