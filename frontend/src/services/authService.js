@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = '/api/v1/auth';
+const baseURL = import.meta.env.VITE_API_URL || '';
+const API_URL = `${baseURL}/api/v1/auth`;
 
 /**
  * Servicio para consumir los endpoints de autenticación del backend de Spring Boot.
